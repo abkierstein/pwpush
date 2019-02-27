@@ -1,11 +1,11 @@
 # pwpush
 Command line Python password pusher via pwpush.com
 
-Usage:
+If no password argument is given, a 20 character password comprised of letters, digits, and punctuation is generated.
+
+### Usage:
 
 `./pwpush`
-
--or-
 
 `./pwpush --password <optional password>`
 
@@ -17,4 +17,3 @@ Pass is: GKtPq:@%Q'r2Jakf7RQ0
 URL: https://pwpush.com/p/tkfrluql1hi0f6qt
 ```
 
-If no password argument is given, a 20 character password comprised of letters, digits, and punctuation is generated.
