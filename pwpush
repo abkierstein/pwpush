@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+'''
+__author__ = 'Adam Kierstein'
+__copyright__ = ''
+__credits__ = []
+__license__ = ''
+__version__ = '1'
+__maintainer__ = 'abkierstein@gmail.com'
+__email__ = 'abkierstein@gmail.com'
+__status__ = 'published'
+'''
+
+import argparse
+import requests
+import secrets
+import string
+import json
+
+def autogen_pw():
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(secrets.choice(alphabet) for i in range(20)) # for a 20-character password
+    return password
+
+parser = argparse.ArgumentParser(description='Accept a password from stdin.')
+parser.add_argument('--password', type=str, help="User defined password.", default=autogen_pw())
+args = parser.parse_args().password
+payload = {
+    'password[payload]': args,
+    'password[expire_after_days]': '2',
+    'password[expire_after_views]': '10'
+    }
+r = requests.post("https://pwpush.com/p.json", data=payload)
+r_response = json.loads(r.content)['url_token']
+
+#Console output
+print(f'Pass is: {args}')
+print(f'URL: https://pwpush.com/p/{r_response}')
