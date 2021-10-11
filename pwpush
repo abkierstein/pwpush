@@ -6,7 +6,7 @@ __author__ = 'Adam Kierstein'
 __copyright__ = ''
 __credits__ = []
 __license__ = ''
-__version__ = '1'
+__version__ = '1.1'
 __maintainer__ = 'abkierstein@gmail.com'
 __email__ = 'abkierstein@gmail.com'
 __status__ = 'published'
@@ -18,22 +18,29 @@ import secrets
 import string
 import json
 
+
 def autogen_pw():
     alphabet = string.ascii_letters + string.digits + string.punctuation
-    password = ''.join(secrets.choice(alphabet) for i in range(20)) # for a 20-character password
+    password = ''.join(secrets.choice(alphabet)
+                       for i in range(20))  # for a 20-character password
     return password
 
+
 parser = argparse.ArgumentParser(description='Accept a password from stdin.')
-parser.add_argument('--password', type=str, help="User defined password.", default=autogen_pw())
-args = parser.parse_args().password
+parser.add_argument('-u', '--url', type=str,
+        help="Optional: Specify the URL of a local pwpush instance. ex: pwpush -u https://foobar.com", default="https://pwpush.com")
+parser.add_argument('-p', '--password', type=str,
+        help="Optional: User defined password.", default=autogen_pw())
+args = parser.parse_args()
+
 payload = {
     'password[payload]': args,
     'password[expire_after_days]': '2',
     'password[expire_after_views]': '10'
-    }
-r = requests.post("https://pwpush.com/p.json", data=payload)
+}
+r = requests.post(f"{args.url}/p.json", data=payload)
 r_response = json.loads(r.content)['url_token']
 
-#Console output
-print(f'Pass is: {args}')
-print(f'URL: https://pwpush.com/p/{r_response}')
+# Console output
+print(f'Pass is: {args.password}')
+print(f'URL: {args.url}/p/{r_response}')
