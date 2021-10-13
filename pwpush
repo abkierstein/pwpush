@@ -31,12 +31,16 @@ parser.add_argument('-u', '--url', type=str,
         help="Optional: Specify the URL of a local pwpush instance. ex: pwpush -u https://foobar.com", default="https://pwpush.com")
 parser.add_argument('-p', '--password', type=str,
         help="Optional: User defined password.", default=autogen_pw())
+parser.add_argument('-d', '--days', type=int,
+        help="Optional: Specify the amount of days after which the password should expire.", default=2)
+parser.add_argument('-v', '--views', type=int,
+        help="Optional: Specify the amount of views after which the password should expire.", default=10)
 args = parser.parse_args()
 
 payload = {
-    'password[payload]': args,
-    'password[expire_after_days]': '2',
-    'password[expire_after_views]': '10'
+    'password[payload]': args.password,
+    'password[expire_after_days]': args.days,
+    'password[expire_after_views]': args.views
 }
 r = requests.post(f"{args.url}/p.json", data=payload)
 r_response = json.loads(r.content)['url_token']
