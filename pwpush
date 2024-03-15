@@ -19,10 +19,10 @@ import string
 import json
 
 
-def autogen_pw():
+def autogen_pw(length):
     alphabet = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(secrets.choice(alphabet)
-                       for i in range(20))  # for a 20-character password
+                       for _ in range(length))
     return password
 
 
@@ -30,15 +30,19 @@ parser = argparse.ArgumentParser(description='Accept a password from stdin.')
 parser.add_argument('-u', '--url', type=str,
         help="Optional: Specify the URL of a local pwpush instance. ex: pwpush -u https://foobar.com", default="https://pwpush.com")
 parser.add_argument('-p', '--password', type=str,
-        help="Optional: User defined password.", default=autogen_pw())
+        help="Optional: User defined password.")
+parser.add_argument('-l', '--length', type=int, default=20,
+        help="Optional: Length of auto-generated password. Ignored if password argument already provided.")
 parser.add_argument('-d', '--days', type=int,
         help="Optional: Specify the amount of days after which the password should expire.", default=2)
 parser.add_argument('-v', '--views', type=int,
         help="Optional: Specify the amount of views after which the password should expire.", default=10)
 args = parser.parse_args()
 
+password = args.password or autogen_pw(args.length)
+
 payload = {
-    'password[payload]': args.password,
+    'password[payload]': password,
     'password[expire_after_days]': args.days,
     'password[expire_after_views]': args.views
 }
@@ -46,5 +50,5 @@ r = requests.post(f"{args.url}/p.json", data=payload)
 r_response = json.loads(r.content)['url_token']
 
 # Console output
-print(f'Pass is: {args.password}')
+print(f'Pass is: {password}')
 print(f'URL: {args.url}/p/{r_response}')
